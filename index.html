@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gender Reveal | Ale & Marco</title>
+  <meta name="description" content="Invitación digital para el gender reveal de Ale y Marco." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0&family=Montserrat:wght@500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <main class="invitation-shell">
+    <section class="screen hero-screen is-active" id="portada">
+      <div class="screen-inner screen-inner-compact">
+        <p class="eyebrow">Tenemos noticias digamos...</p>
+
+        <figure class="hero-image">
+          <img src="./src/test.png" alt="Pruebas positivas" />
+        </figure>
+
+        <p class="eyebrow eyebrow-bottom">Positivas</p>
+
+        <button class="pill-button open-button" id="openInvitation" type="button">
+          Abrir
+        </button>
+      </div>
+    </section>
+
+    <section class="screen invite-screen" id="invitacion" aria-hidden="true">
+      <div class="screen-inner">
+        <p class="signature">Ale &amp; Marco</p>
+        <p class="eyebrow invite-kicker">Te invitamos a acompañarnos</p>
+
+        <figure class="main-image">
+          <img src="./src/feet.png" alt="Ilustración de pies de bebé" />
+        </figure>
+
+        <h1 class="title">Gender Reveal</h1>
+
+        <p class="event-meta">Abril 26, 2026 &nbsp;·&nbsp; 15:30 hrs</p>
+
+        <nav class="actions" aria-label="Acciones del evento">
+          <a class="pill-link" href="#" data-action="calendar">
+            <span class="material-symbols-rounded" aria-hidden="true">calendar_month</span>
+            Añadir evento
+          </a>
+          <a class="pill-link" href="https://maps.google.com/?q=C.+Salvador+Galindo+225,+La+Aurora,+Saltillo,+Coah."
+            target="_blank" rel="noreferrer">
+            <span class="material-symbols-rounded" aria-hidden="true">location_on</span>
+            Ubicación
+          </a>
+          <a class="pill-link pill-link-disabled" href="#" aria-disabled="true" tabindex="-1">
+            <span class="material-symbols-rounded" aria-hidden="true">directions_car</span>
+            Coming soon
+          </a>
+        </nav>
+
+        <p class="rsvp">Confirma tu asistencia</p>
+
+        <p class="event-address dynamic-note">
+          Si piensas que es <b>NIÑA</b>: <i>Pañales</i><br />
+          Si piensas que es <b>NIÑO</b>: <i>Toallitas húmedas</i>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <audio id="inviteAudio" preload="auto">
+    <source src="./sunshine.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script src="./script.js"></script>
+</body>
+
+</html>

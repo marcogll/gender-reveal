@@ -1,0 +1,395 @@
+@font-face {
+  font-family: "Brittany";
+  src: url("./Brittany.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --pink: #f3d7e4;
+  --blue: #d4ebf5;
+  --purple: #7451b6;
+  --purple-soft: rgba(116, 81, 182, 0.28);
+  --shadow: 0 22px 48px rgba(116, 81, 182, 0.14);
+  --text: #6f53a4;
+  --white: rgba(255, 255, 255, 0.72);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Montserrat", sans-serif;
+  background: linear-gradient(90deg, var(--blue) 0 50%, var(--pink) 50% 100%);
+  color: var(--text);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at top center, rgba(255, 255, 255, 0.42), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 40%);
+}
+
+.invitation-shell {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 22px 34px;
+}
+
+.screen-inner {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 25px;
+}
+
+.screen-inner-compact {
+  min-height: 100vh;
+  justify-content: space-evenly;
+  gap: 22px;
+}
+
+.hero-screen {
+  transition: opacity 320ms ease, transform 320ms ease;
+}
+
+.hero-screen.is-hidden {
+  opacity: 0;
+  transform: translateY(-18px);
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.invite-screen {
+  display: none;
+  opacity: 0;
+  transform: translateY(24px);
+  position: relative;
+}
+
+.invite-screen.is-active {
+  display: grid;
+  animation: reveal 420ms ease forwards;
+}
+
+.invite-screen.is-active .screen-inner > * {
+  opacity: 0;
+  animation: float-in 560ms ease forwards;
+}
+
+.invite-screen.is-active .signature {
+  animation-delay: 80ms;
+}
+
+.invite-screen.is-active .invite-kicker {
+  animation-delay: 140ms;
+}
+
+.invite-screen.is-active .main-image {
+  animation-delay: 220ms;
+}
+
+.invite-screen.is-active .title {
+  animation-delay: 320ms;
+}
+
+.invite-screen.is-active .event-meta {
+  animation-delay: 400ms;
+}
+
+.invite-screen.is-active .actions {
+  animation-delay: 500ms;
+}
+
+.invite-screen.is-active .rsvp {
+  animation-delay: 620ms;
+}
+
+.invite-screen.is-active .dynamic-note {
+  animation-delay: 720ms;
+}
+
+.close-button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(116, 81, 182, 0.5);
+  color: var(--purple);
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background: rgba(116, 81, 182, 0.62);
+}
+
+.eyebrow,
+.event-meta,
+.event-address,
+.rsvp,
+.pill-link,
+.pill-button {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: clamp(1.1rem, 2.95vw, 1.75rem);
+  font-weight: 700;
+}
+
+.eyebrow-bottom {
+  margin-top: 6px;
+}
+
+.hero-image,
+.main-image {
+  margin: 0;
+}
+
+.hero-image img {
+  width: min(100%, 420px);
+  display: block;
+  filter: drop-shadow(0 12px 22px rgba(116, 81, 182, 0.14));
+}
+
+.pill-button,
+.pill-link {
+  border: 0;
+  border-radius: 999px;
+  background: var(--purple-soft);
+  color: var(--purple);
+  box-shadow: none;
+  text-decoration: none;
+}
+
+.pill-button {
+  min-width: 300px;
+  padding: 16px 32px;
+  font: inherit;
+  font-size: clamp(1.38rem, 3.7vw, 1.84rem);
+  cursor: pointer;
+}
+
+.pill-button:hover,
+.pill-link:hover {
+  background: rgba(116, 81, 182, 0.36);
+}
+
+.pill-link-disabled,
+.pill-link-disabled:hover {
+  background: rgba(111, 111, 111, 0.18);
+  color: rgba(90, 90, 90, 0.82);
+  cursor: default;
+}
+
+.signature,
+.title {
+  font-family: "Brittany", cursive;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.9;
+}
+
+.signature {
+  max-width: none;
+  margin: 0 0 35px;
+  font-size: clamp(1.74rem, 5.07vw, 2.38rem);
+  text-align: center;
+  white-space: nowrap;
+  line-height: 0.82;
+}
+
+.invite-kicker {
+  max-width: 460px;
+  margin: 0 0 25px;
+  font-size: clamp(1.2rem, 3.05vw, 1.84rem);
+}
+
+.main-image {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.main-image img {
+  width: min(100%, 438px);
+  display: block;
+  transform: translateX(8px);
+}
+
+.title {
+  max-width: none;
+  margin: 0;
+  font-size: clamp(1.18rem, 3.78vw, 1.85rem);
+  text-align: center;
+  line-height: 0.82;
+  white-space: nowrap;
+}
+
+.main-image + .title {
+  margin-top: 50px;
+}
+
+.event-meta {
+  max-width: none;
+  margin: 40px 0 0;
+  font-size: clamp(1.1rem, 2.85vw, 1.75rem);
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.event-address {
+  max-width: 460px;
+  margin: 0;
+  font-style: normal;
+  font-size: clamp(0.7rem, 1.98vw, 0.94rem);
+  line-height: 1.25;
+  font-weight: 700;
+  text-align: center;
+}
+
+.actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pill-link {
+  width: min(100%, 320px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 18px;
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.material-symbols-rounded {
+  font-size: 1.1rem;
+  letter-spacing: 0;
+}
+
+.rsvp {
+  max-width: none;
+  margin: 0;
+  font-size: 0.83rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dynamic-note {
+  margin-top: 22px;
+  font-size: clamp(0.56rem, 1.58vw, 0.75rem);
+  opacity: 0.68;
+}
+
+@media (max-width: 420px) {
+  .screen-inner {
+    max-width: 380px;
+  }
+
+  .signature {
+    font-size: clamp(1.66rem, 6.63vw, 2.09rem);
+  }
+
+  .hero-image img,
+  .main-image img {
+    width: min(100%, 370px);
+  }
+
+  .title {
+    font-size: clamp(1.08rem, 3.46vw, 1.63rem);
+  }
+
+  .event-meta {
+    white-space: normal;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 700px) {
+  .screen {
+    padding-inline: 40px;
+  }
+
+  .pill-button {
+    min-width: 340px;
+  }
+
+  .hero-image img,
+  .main-image img {
+    width: min(100%, 460px);
+  }
+
+  .title {
+    font-size: clamp(7rem, 14vw, 9.4rem);
+  }
+
+  .signature {
+    font-size: clamp(3.8rem, 7vw, 5rem);
+  }
+}
