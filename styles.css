@@ -339,10 +339,17 @@ body::before {
   }
 
   .title {
-    font-size: clamp(1.08rem, 3.46vw, 1.63rem);
+    width: 100%;
+    font-size: clamp(3.12rem, 11.7vw, 4.29rem);
+    line-height: 0.78;
+  }
+
+  .main-image + .title {
+    margin-top: 28px;
   }
 
   .event-meta {
+    margin-top: 28px;
     white-space: normal;
   }
 }

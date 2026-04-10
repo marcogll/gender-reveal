@@ -12,7 +12,7 @@ if (openButton && heroScreen && inviteScreen) {
     inviteScreen.classList.add("is-active");
     inviteScreen.setAttribute("aria-hidden", "false");
     if (inviteAudio) {
-      inviteAudio.volume = 0.5;
+      inviteAudio.volume = 0.45;
       inviteAudio.play().catch(() => {});
     }
   });
