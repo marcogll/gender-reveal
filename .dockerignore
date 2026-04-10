@@ -1,8 +1,2 @@
 .git
 .gitignore
-Dockerfile
-docker-compose.yml
-Caddyfile
-README.md
-page 1.png
-page 2.png
