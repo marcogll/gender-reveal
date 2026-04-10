@@ -22,51 +22,149 @@ const voteStorageKey = "gender-reveal-vote-choice-v3";
 const voterNameStorageKey = "gender-reveal-voter-name-v3";
 const totalsStorageKey = "gender-reveal-vote-totals-v3";
 const fallbackVoteTotals = { girl: 0, boy: 0 };
-const voteWebhookUrl =
-  "https://flows.soul23.cloud/webhook/87701460-f93a-4303-a6f4-83ff280967cc";
+const voteWebhookUrl = "/api/vote";
+const voteResultsWebhookUrl = "/api/results";
 
-function extractVoteTotals(payload) {
-  if (!payload || typeof payload !== "object") {
+function toFiniteNumber(value) {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsedValue = Number(value);
+    if (Number.isFinite(parsedValue)) {
+      return parsedValue;
+    }
+  }
+
+  return null;
+}
+
+function normalizeVoteOption(value) {
+  if (typeof value !== "string") {
     return null;
   }
 
-  const candidateSources = [
-    payload,
-    payload.data,
-    payload.totals,
-    payload.results,
-    payload.vote_totals,
-    payload.voteTotals,
-  ].filter(Boolean);
+  const normalizedValue = value.trim().toLowerCase();
+  if (!normalizedValue) {
+    return null;
+  }
 
-  for (const source of candidateSources) {
-    if (
-      Number.isFinite(source.girl) &&
-      Number.isFinite(source.boy)
-    ) {
-      return { girl: source.girl, boy: source.boy };
+  if (["girl", "nina", "niña", "female", "femenino"].includes(normalizedValue)) {
+    return "girl";
+  }
+
+  if (["boy", "nino", "niño", "male", "masculino"].includes(normalizedValue)) {
+    return "boy";
+  }
+
+  return null;
+}
+
+function aggregateVoteTotals(items) {
+  if (!Array.isArray(items)) {
+    return null;
+  }
+
+  const aggregatedTotals = { girl: 0, boy: 0 };
+  let foundVotes = false;
+
+  for (const item of items) {
+    if (!item || typeof item !== "object") {
+      continue;
     }
 
-    if (
-      Number.isFinite(source.nina) &&
-      Number.isFinite(source.nino)
-    ) {
-      return { girl: source.nina, boy: source.nino };
+    const option = normalizeVoteOption(
+      item.vote ?? item.option ?? item.choice ?? item.gender ?? item.prediction
+    );
+
+    if (!option) {
+      continue;
     }
 
-    if (
-      Number.isFinite(source.girl_votes) &&
-      Number.isFinite(source.boy_votes)
-    ) {
-      return { girl: source.girl_votes, boy: source.boy_votes };
+    aggregatedTotals[option] += 1;
+    foundVotes = true;
+  }
+
+  return foundVotes ? aggregatedTotals : null;
+}
+
+function extractVoteTotals(payload) {
+  const queue = [payload];
+  const visitedSources = new Set();
+
+  while (queue.length > 0) {
+    const source = queue.shift();
+    if (!source || visitedSources.has(source)) {
+      continue;
     }
 
-    if (
-      Number.isFinite(source.girlVotes) &&
-      Number.isFinite(source.boyVotes)
-    ) {
-      return { girl: source.girlVotes, boy: source.boyVotes };
+    visitedSources.add(source);
+
+    const aggregatedTotals = aggregateVoteTotals(source);
+    if (aggregatedTotals) {
+      return aggregatedTotals;
     }
+
+    if (typeof source !== "object") {
+      continue;
+    }
+
+    const girl = toFiniteNumber(source.girl);
+    const boy = toFiniteNumber(source.boy);
+    if (
+      girl !== null &&
+      boy !== null
+    ) {
+      return { girl, boy };
+    }
+
+    const nina = toFiniteNumber(source.nina);
+    const nino = toFiniteNumber(source.nino);
+    if (
+      nina !== null &&
+      nino !== null
+    ) {
+      return { girl: nina, boy: nino };
+    }
+
+    const girlVotesSnake = toFiniteNumber(source.girl_votes);
+    const boyVotesSnake = toFiniteNumber(source.boy_votes);
+    if (
+      girlVotesSnake !== null &&
+      boyVotesSnake !== null
+    ) {
+      return { girl: girlVotesSnake, boy: boyVotesSnake };
+    }
+
+    const girlVotesCamel = toFiniteNumber(source.girlVotes);
+    const boyVotesCamel = toFiniteNumber(source.boyVotes);
+    if (
+      girlVotesCamel !== null &&
+      boyVotesCamel !== null
+    ) {
+      return { girl: girlVotesCamel, boy: boyVotesCamel };
+    }
+
+    const ninaVotos = toFiniteNumber(source["niña_votos"]);
+    const ninoVotos = toFiniteNumber(source["niño_votos"]);
+    if (
+      ninaVotos !== null &&
+      ninoVotos !== null
+    ) {
+      return { girl: ninaVotos, boy: ninoVotos };
+    }
+
+    queue.push(
+      source.data,
+      source.totals,
+      source.results,
+      source.vote_totals,
+      source.voteTotals,
+      source.records,
+      source.items,
+      source.votes
+    );
   }
 
   return null;
@@ -194,7 +292,7 @@ async function sendVoteToWebhook({ name, option }) {
 }
 
 async function fetchLatestVoteTotals() {
-  const response = await fetch(voteWebhookUrl, {
+  const response = await fetch(voteResultsWebhookUrl, {
     method: "GET",
     headers: {
       Accept: "application/json",
