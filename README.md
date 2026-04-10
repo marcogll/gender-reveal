@@ -22,9 +22,13 @@ Para levantar el sitio con Docker Compose:
 docker compose up --build
 ```
 
-Luego abre:
+Esta configuración está pensada para ejecutarse detrás de un proxy reverso, por ejemplo Coolify.
 
-- `http://localhost:8765`
+Si necesitas acceso local directo, publica manualmente el puerto `80` del contenedor.
+
+En despliegue con Coolify, el servicio interno expone:
+
+- `80/tcp`
 
 ## Atribuciones
 
