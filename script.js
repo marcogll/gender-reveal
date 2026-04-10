@@ -16,12 +16,61 @@ const girlVoteFill = document.querySelector("#girlVoteFill");
 const boyVoteFill = document.querySelector("#boyVoteFill");
 const girlVotePercent = document.querySelector("#girlVotePercent");
 const boyVotePercent = document.querySelector("#boyVotePercent");
-const voteStorageKey = "gender-reveal-vote-choice-v2";
-const voterNameStorageKey = "gender-reveal-voter-name-v2";
-const totalsStorageKey = "gender-reveal-vote-totals-v2";
-const fallbackVoteTotals = { girl: 8, boy: 8 };
+const searchParams = new URLSearchParams(window.location.search);
+const isVoteTestMode = searchParams.has("test-votes");
+const voteStorageKey = "gender-reveal-vote-choice-v3";
+const voterNameStorageKey = "gender-reveal-voter-name-v3";
+const totalsStorageKey = "gender-reveal-vote-totals-v3";
+const fallbackVoteTotals = { girl: 0, boy: 0 };
 const voteWebhookUrl =
   "https://flows.soul23.cloud/webhook/87701460-f93a-4303-a6f4-83ff280967cc";
+
+function extractVoteTotals(payload) {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const candidateSources = [
+    payload,
+    payload.data,
+    payload.totals,
+    payload.results,
+    payload.vote_totals,
+    payload.voteTotals,
+  ].filter(Boolean);
+
+  for (const source of candidateSources) {
+    if (
+      Number.isFinite(source.girl) &&
+      Number.isFinite(source.boy)
+    ) {
+      return { girl: source.girl, boy: source.boy };
+    }
+
+    if (
+      Number.isFinite(source.nina) &&
+      Number.isFinite(source.nino)
+    ) {
+      return { girl: source.nina, boy: source.nino };
+    }
+
+    if (
+      Number.isFinite(source.girl_votes) &&
+      Number.isFinite(source.boy_votes)
+    ) {
+      return { girl: source.girl_votes, boy: source.boy_votes };
+    }
+
+    if (
+      Number.isFinite(source.girlVotes) &&
+      Number.isFinite(source.boyVotes)
+    ) {
+      return { girl: source.girlVotes, boy: source.boyVotes };
+    }
+  }
+
+  return null;
+}
 
 function updateAudioToggleState() {
   if (!audioToggleButton || !audioToggleIcon || !inviteAudio) {
@@ -134,13 +183,42 @@ async function sendVoteToWebhook({ name, option }) {
   if (!response.ok) {
     throw new Error(`Webhook responded with ${response.status}`);
   }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    return null;
+  }
+
+  const payload = await response.json();
+  return extractVoteTotals(payload);
+}
+
+async function fetchLatestVoteTotals() {
+  const response = await fetch(voteWebhookUrl, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Webhook responded with ${response.status}`);
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    return null;
+  }
+
+  const payload = await response.json();
+  return extractVoteTotals(payload);
 }
 
 async function handleVoteSelection(selectedOption) {
   const existingVote = localStorage.getItem(voteStorageKey);
-  const totals = readVoteTotals();
+  let totals = readVoteTotals();
 
-  if (existingVote) {
+  if (existingVote && !isVoteTestMode) {
     const storedName = localStorage.getItem(voterNameStorageKey);
     renderVoteResults(totals);
     setVoteFeedback(
@@ -175,29 +253,48 @@ async function handleVoteSelection(selectedOption) {
     return;
   }
 
-  try {
-    await sendVoteToWebhook({ name: normalizedName, option: selectedOption });
-  } catch {
-    setVoteFeedback("No se pudo registrar tu voto. Intenta de nuevo.");
-    return;
+  if (isVoteTestMode) {
+    totals[selectedOption] += 1;
+  } else {
+    try {
+      const webhookTotals = await sendVoteToWebhook({
+        name: normalizedName,
+        option: selectedOption,
+      });
+      if (webhookTotals) {
+        totals = webhookTotals;
+      } else {
+        totals[selectedOption] += 1;
+      }
+    } catch {
+      setVoteFeedback("No se pudo registrar tu voto. Intenta de nuevo.");
+      return;
+    }
   }
 
-  totals[selectedOption] += 1;
-  localStorage.setItem(voteStorageKey, selectedOption);
-  localStorage.setItem(voterNameStorageKey, normalizedName);
+  if (!isVoteTestMode) {
+    localStorage.setItem(voteStorageKey, selectedOption);
+    localStorage.setItem(voterNameStorageKey, normalizedName);
+  }
   saveVoteTotals(totals);
   renderVoteResults(totals);
   setVoteFeedback(
-    selectedOption === "girl"
-      ? `${normalizedName}, tu voto por niña fue registrado.`
-      : `${normalizedName}, tu voto por niño fue registrado.`
+    isVoteTestMode
+      ? selectedOption === "girl"
+        ? `${normalizedName}, voto de prueba por niña registrado.`
+        : `${normalizedName}, voto de prueba por niño registrado.`
+      : selectedOption === "girl"
+        ? `${normalizedName}, tu voto por niña fue registrado.`
+        : `${normalizedName}, tu voto por niño fue registrado.`
   );
-  lockVoteButtons();
+  if (!isVoteTestMode) {
+    lockVoteButtons();
+  }
 }
 
 if (voteFigure && voteImage) {
   const existingVote = localStorage.getItem(voteStorageKey);
-  if (existingVote) {
+  if (existingVote && !isVoteTestMode) {
     const storedName = localStorage.getItem(voterNameStorageKey);
     renderVoteResults(readVoteTotals());
     setVoteFeedback(
@@ -208,9 +305,25 @@ if (voteFigure && voteImage) {
     lockVoteButtons();
   }
 
+  if (!isVoteTestMode) {
+    void fetchLatestVoteTotals()
+      .then((totals) => {
+        if (!totals) {
+          return;
+        }
+
+        saveVoteTotals(totals);
+        renderVoteResults(totals);
+      })
+      .catch(() => {});
+  } else {
+    renderVoteResults(readVoteTotals());
+    setVoteFeedback("Modo test activo: puedes registrar varios votos aquí.");
+  }
+
   voteFigure.addEventListener("click", (event) => {
     const existingSelection = localStorage.getItem(voteStorageKey);
-    if (existingSelection) {
+    if (existingSelection && !isVoteTestMode) {
       void handleVoteSelection(existingSelection);
       return;
     }
