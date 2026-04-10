@@ -36,9 +36,15 @@
       <div class="screen-inner">
         <p class="signature">Ale &amp; Marco</p>
         <p class="eyebrow invite-kicker">Te invitamos a acompañarnos</p>
+        <p class="vote-kicker">Vota</p>
+        <p class="vote-helper">Selecciona un piecito</p>
 
-        <figure class="main-image">
+        <figure class="main-image vote-figure">
           <img src="./src/feet.png" alt="Ilustración de pies de bebé" />
+          <button class="vote-hitbox vote-hitbox-left" type="button" data-vote-option="girl"
+            aria-label="Votar por niña"></button>
+          <button class="vote-hitbox vote-hitbox-right" type="button" data-vote-option="boy"
+            aria-label="Votar por niño"></button>
         </figure>
 
         <h1 class="title">Gender Reveal</h1>
@@ -62,11 +68,29 @@
         </nav>
 
         <p class="rsvp">Confirma tu asistencia</p>
+        <p class="vote-feedback" id="voteFeedback" aria-live="polite"></p>
 
-        <p class="event-address dynamic-note">
-          Si piensas que es <b>NIÑA</b>: <i>Pañales</i><br />
-          Si piensas que es <b>NIÑO</b>: <i>Toallitas húmedas</i>
-        </p>
+        <div class="event-address dynamic-note vote-results" id="voteResults" hidden>
+          <div class="vote-result">
+            <div class="vote-result-bar" aria-hidden="true">
+              <span class="vote-result-fill vote-result-fill-girl" id="girlVoteFill"></span>
+            </div>
+            <p class="vote-result-copy">
+              <span class="vote-result-percent" id="girlVotePercent">0%</span>
+              Si piensas que es <b>NIÑA</b>: <i>Pañales</i>
+            </p>
+          </div>
+
+          <div class="vote-result">
+            <div class="vote-result-bar" aria-hidden="true">
+              <span class="vote-result-fill vote-result-fill-boy" id="boyVoteFill"></span>
+            </div>
+            <p class="vote-result-copy">
+              <span class="vote-result-percent" id="boyVotePercent">0%</span>
+              Si piensas que es <b>NIÑO</b>: <i>Toallitas húmedas</i>
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -74,6 +98,11 @@
   <audio id="inviteAudio" preload="auto">
     <source src="./sunshine.mp3" type="audio/mpeg" />
   </audio>
+
+  <button class="audio-toggle-button" id="audioToggle" type="button" aria-label="Silenciar música"
+    aria-pressed="false" hidden>
+    <span class="material-symbols-rounded" id="audioToggleIcon" aria-hidden="true">volume_up</span>
+  </button>
 
   <script src="./script.js"></script>
 </body>
