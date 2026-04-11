@@ -21,7 +21,7 @@ const isVoteTestMode = searchParams.has("test-votes");
 const voteStorageKey = "gender-reveal-vote-choice-v3";
 const voterNameStorageKey = "gender-reveal-voter-name-v3";
 const totalsStorageKey = "gender-reveal-vote-totals-v3";
-const fallbackVoteTotals = { girl: 0, boy: 0 };
+const fallbackVoteTotals = { girl: 5, boy: 7 };
 const voteWebhookUrl = "/api/vote";
 const voteResultsWebhookUrl = "/api/results";
 const voteResultsAuthHeader = "udBZuJr1yoOESfQR5Ob2Fy";
@@ -406,6 +406,7 @@ if (voteFigure && voteImage) {
   }
 
   if (!isVoteTestMode) {
+    renderVoteResults(readVoteTotals());
     void fetchLatestVoteTotals()
       .then((totals) => {
         if (!totals) {
