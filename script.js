@@ -24,6 +24,7 @@ const totalsStorageKey = "gender-reveal-vote-totals-v3";
 const fallbackVoteTotals = { girl: 0, boy: 0 };
 const voteWebhookUrl = "/api/vote";
 const voteResultsWebhookUrl = "/api/results";
+const voteResultsAuthHeader = "TU_TOKEN_AQUI";
 
 function toFiniteNumber(value) {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -296,6 +297,7 @@ async function fetchLatestVoteTotals() {
     method: "GET",
     headers: {
       Accept: "application/json",
+      Authorization: voteResultsAuthHeader,
     },
   });
 
