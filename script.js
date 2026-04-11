@@ -24,7 +24,7 @@ const totalsStorageKey = "gender-reveal-vote-totals-v3";
 const fallbackVoteTotals = { girl: 0, boy: 0 };
 const voteWebhookUrl = "/api/vote";
 const voteResultsWebhookUrl = "/api/results";
-const voteResultsAuthHeader = "TU_TOKEN_AQUI";
+const voteResultsAuthHeader = "udBZuJr1yoOESfQR5Ob2Fy";
 
 function toFiniteNumber(value) {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -225,7 +225,7 @@ function readVoteTotals() {
     ) {
       return storedTotals;
     }
-  } catch {}
+  } catch { }
 
   return { ...fallbackVoteTotals };
 }
@@ -415,7 +415,7 @@ if (voteFigure && voteImage) {
         saveVoteTotals(totals);
         renderVoteResults(totals);
       })
-      .catch(() => {});
+      .catch(() => { });
   } else {
     renderVoteResults(readVoteTotals());
     setVoteFeedback("Modo test activo: puedes registrar varios votos aquí.");
@@ -469,7 +469,7 @@ if (openButton && heroScreen && inviteScreen) {
     inviteScreen.setAttribute("aria-hidden", "false");
     if (inviteAudio) {
       inviteAudio.volume = 0.45;
-      inviteAudio.play().catch(() => {});
+      inviteAudio.play().catch(() => { });
     }
     updateAudioToggleVisibility();
     updateAudioToggleState();
