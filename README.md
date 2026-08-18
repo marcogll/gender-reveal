@@ -1,4 +1,40 @@
-# Evite
+<p align="center">
+  <a href="https://soul23.mx">
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="https://raw.githubusercontent.com/marcogll/mg_data_storage/refs/heads/main/soul23/logo/soul23_logo_wh.png">
+      <source
+        media="(prefers-color-scheme: light)"
+        srcset="https://raw.githubusercontent.com/marcogll/mg_data_storage/refs/heads/main/soul23/logo/soul23_logo_blk.png">
+      <img
+        src="https://raw.githubusercontent.com/marcogll/mg_data_storage/refs/heads/main/soul23/logo/soul23_logo_blk.png"
+        width="110"
+        alt="Soul:23">
+    </picture>
+  </a>
+</p>
+
+<h1 align="center">Evite</h1>
+
+<p align="center">
+  Sitio personal para la invitación digital del gender reveal de mi hijo.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/HTML5-3a3a3a?style=flat-square&logo=html5&logoColor=white">
+  <img src="https://img.shields.io/badge/CSS3-3a3a3a?style=flat-square&logo=css3&logoColor=white">
+  <img src="https://img.shields.io/badge/JavaScript-3a3a3a?style=flat-square&logo=javascript&logoColor=white">
+</p>
+
+---
+
+## Description
+
+Sitio estático para la invitación digital del gender reveal: index.html, styles.css, script.js, assets en src/ y audio local sunshine.mp3.
+
+HTML5, CSS3 y JavaScript, sin dependencias.
+
 
 Sitio personal para la invitación digital del gender reveal de mi hijo.
 
